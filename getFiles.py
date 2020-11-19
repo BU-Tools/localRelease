@@ -38,14 +38,15 @@ def GetAllFilesToSend(args):
     uploadFile = "address_table/slaves.yaml"
     allFiles.append([tableSlavesFile, uploadFile])
     tableYAML = yaml.load(open(tableSlavesFile))
-    uploadXMLFileList = []
+    XMLFileList = []
     for slave in tableYAML['UHAL_MODULES']:
         slave = tableYAML['UHAL_MODULES'][slave]
         if 'XML' in slave:
             for xmlFile in slave['XML']:
-                if xmlFile not in uploadXMLFileList:
-                    uploadXMLFileList.append([xmlFile, xmlFile])
-    allFiles.extend(uploadXMLFileList)
+                XMLFileItem = [xmlFile, xmlFile]
+                if XMLFileItem not in XMLFileList:
+                    XMLFileList.append(XMLFileItem)
+    allFiles.extend(XMLFileList)
 
     #########################################################################
     # FW files
