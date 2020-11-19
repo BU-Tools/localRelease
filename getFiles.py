@@ -16,17 +16,27 @@ def GetFilesToSend(path, match):
 def GetAllFilesToSend(args):
     allFiles = []
 
+    #########################################################################
+    # DTSI files
+    #########################################################################
     dtsiSlavesFile = args.dtsiPath+"slaves.yaml"
-    allFiles.append(dtsiSlavesFile)
-
+    uploadDir = "dtsi/"
+    allFiles.append([dtsiSlavesFile, uploadDir])
     for slave in yaml.load(open(dtsiSlavesFile))['DTSI_CHUNKS']:
         dtsiFile = GetFilesToSend(args.dtsiPath+"hw/", slave+".")
+        if len(dtsiFile) != 1:
+            raise Exception(
+                'Too few or too many dtsi file matches!\nret:{0}\n'.format(dtsiFile))
         for file in dtsiFile:
-            allFiles.append(dtsiFile[file])
+            uploadFile = uploadDir+file
+            allFiles.append([dtsiFile[file], uploadFile])
 
+    #########################################################################
+    # Address table files
+    #########################################################################
     tableSlavesFile = args.tablePath+"slaves.yaml"
-    allFiles.append(tableSlavesFile)
-
+    uploadFile = "address_table/slaves.yaml"
+    allFiles.append([tableSlavesFile, uploadFile])
     tableYAML = yaml.load(open(tableSlavesFile))
     uploadXMLFileList = []
     for slave in tableYAML['UHAL_MODULES']:
@@ -34,11 +44,14 @@ def GetAllFilesToSend(args):
         if 'XML' in slave:
             for xmlFile in slave['XML']:
                 if xmlFile not in uploadXMLFileList:
-                    uploadXMLFileList.append(xmlFile)
+                    uploadXMLFileList.append([xmlFile, xmlFile])
     allFiles.extend(uploadXMLFileList)
 
+    #########################################################################
+    # FW files
+    #########################################################################
     bitFiles = GetFilesToSend('bit/', 'top')
     for file in bitFiles:
-        allFiles.append(bitFiles[file])
+        allFiles.append([bitFiles[file], file])
 
     return allFiles
