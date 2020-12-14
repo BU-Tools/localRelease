@@ -9,6 +9,8 @@ import json  # parse github return
 import os  # for mkdir
 import shutil
 
+from getFiles import GetAllFilesToSend  # find files
+
 token = ""
 
 
@@ -98,8 +100,52 @@ def GetReleaseFiles(name, host, project, repo, release):
                     outFile.close()
 
 
-def GetLocalReleaseFiles(path):
-    for f in listdir(path):
+def GetLocalReleaseFiles(name, dtsiPath, tablePath):
+    addressTableDir = "os/address_table/"+name+"_modules/"
+    dtsiDir = "kernel/hw_"+name+"/"
+    RecreateDir(addressTableDir)
+    RecreateDir(dtsiDir)
+
+    args = argparse.Namespace()
+    args.dtsiPath = dtsiPath
+    args.tablePath = tablePath
+    allFiles = GetAllFilesToSend(args)
+
+    for item in allFiles:
+        # ========================================================================
+        # kernel path (dtsi related files)
+        # ========================================================================
+        if item[1].find("dtsi") != -1:
+            # check which kind of file this is and rename it
+            if item[1].find("slaves.yaml") != -1:
+                # yaml file, rename file in loca path
+                filename = "kernel/"+name+"_slaves.yaml"
+            else:
+                # dtsi file, rename path to kernel/hw_NAME/*
+                filename = dtsiDir+item[1].replace("dtsi.", "")
+            print "Copying", item[1], "from", item[0], "to", filename
+            shutil.copyfile(item[0], filename)
+
+        # ========================================================================
+        # os path (address table related files)
+        # ========================================================================
+        if item[1].find("address_table") != -1:
+            if item[1].find("slaves.yaml") != -1:
+                # yaml file, rename file in loca path
+                filename = "os/"+name+"_slaves.yaml"
+            else:
+                filename = addressTableDir + \
+                    item[1].replace("address_table.modules.", "")
+            print "Copying", item[1], "from", item[0], "to", filename
+            shutil.copyfile(item[0], filename)
+
+        # ========================================================================
+        # svf files
+        # ========================================================================
+        if item[1].find("svf") != -1:
+            filename = "bit/top_"+name+".svf"
+            print "Copying", item[1], "from", item[0], "to", filename
+            shutil.copyfile(item[0], filename)
 
 
 def main(args):
@@ -125,9 +171,11 @@ def main(args):
     else:
         # load the local slaves list yaml
         CMFile = open(args.CM)
-        local = yaml.load(CMFile)
-        print "Processing local"
-        GetReleaseFiles(local['local']['path'])
+        remotes = yaml.load(CMFile)
+        for remote in remotes:
+            print "Processing", remote
+            GetLocalReleaseFiles(
+                remote, remotes[remote]['dtsi'], remotes[remote]['table'])
 
 
 if __name__ == "__main__":
