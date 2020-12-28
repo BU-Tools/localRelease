@@ -26,21 +26,18 @@ def releaseFile(releaseJSON, localFile, uploadFile):
 
 
 def main():
-
     parser = argparse.ArgumentParser(description="Build address table.")
     parser.add_argument("--dtsiPath", "-d", help="path for dtsi files")
     parser.add_argument("--tablePath", "-t",
                         help="path for address table files")
     args = parser.parse_args()
 
-    """
     # get the token for remote write access to the repo
     global token
     token=os.getenv("GH_TOKEN")
     if token == None:
         print "Missing github oath token"
         quit()
-
 
     #############################################################################
     # Load local repo and
@@ -101,12 +98,9 @@ def main():
         print "Created draft release v{0}".format(releaseVersion)
     ReleaseJSON=json.loads(response.text)
 
-
     #############################################################################
     # Upload files to the release
     #############################################################################
-
-    """
 
     try:
         allFiles = GetAllFilesToSend(args)
@@ -117,13 +111,12 @@ def main():
         for item in allFiles:
             print "  Uploading:", (item[0]).ljust(
                 padding), "to", item[1]
-            # Call releaseFile function
-
+            releaseFile(ReleaseJSON, item[0], item[1])
     except Exception as e:
-        # requests.delete(ReleaseJSON["url"], headers={
-        #                 "Authorization": "token "+token})
-        # requests.delete("https://api."+host+"/repos/"+project+"/"+repo+"/git/refs/tags/" +
-        #                 ReleaseJSON["tag_name"], headers={"Authorization": "token "+token})
+        requests.delete(ReleaseJSON["url"], headers={
+                        "Authorization": "token "+token})
+        requests.delete("https://api."+host+"/repos/"+project+"/"+repo+"/git/refs/tags/" +
+                        ReleaseJSON["tag_name"], headers={"Authorization": "token "+token})
         print "Error! Deleting partial release"
         print e
 
