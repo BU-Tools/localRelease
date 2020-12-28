@@ -107,8 +107,8 @@ def GetLocalReleaseFiles(name, localPath):
     RecreateDir(dtsiDir)
 
     args = argparse.Namespace()
-    args.dtsiPath = os.path.join(localPath, '/kernel/')
-    args.tablePath = os.path.join(localPath, '/os/')
+    args.dtsiPath = os.path.join(localPath, 'kernel/')
+    args.tablePath = os.path.join(localPath, 'os/')
     allFiles = GetAllFilesToSend(args)
 
     for item in allFiles:
