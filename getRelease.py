@@ -100,15 +100,15 @@ def GetReleaseFiles(name, host, project, repo, release):
                     outFile.close()
 
 
-def GetLocalReleaseFiles(name, dtsiPath, tablePath):
+def GetLocalReleaseFiles(name, localPath):
     addressTableDir = "os/address_table/"+name+"_modules/"
     dtsiDir = "kernel/hw_"+name+"/"
     RecreateDir(addressTableDir)
     RecreateDir(dtsiDir)
 
     args = argparse.Namespace()
-    args.dtsiPath = dtsiPath
-    args.tablePath = tablePath
+    args.dtsiPath = os.path.join(localPath, '/kernel/')
+    args.tablePath = os.path.join(localPath, '/os/')
     allFiles = GetAllFilesToSend(args)
 
     for item in allFiles:
@@ -175,7 +175,7 @@ def main(args):
         for remote in remotes:
             print "Processing", remote
             GetLocalReleaseFiles(
-                remote, remotes[remote]['dtsi'], remotes[remote]['table'])
+                remote, remotes[remote]['local'])
 
 
 if __name__ == "__main__":

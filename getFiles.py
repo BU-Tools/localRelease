@@ -21,7 +21,7 @@ def GetAllFilesToSend(args):
     #########################################################################
     dtsiSlavesFile = args.dtsiPath+"slaves.yaml"
     uploadDir = "dtsi/"
-    allFiles.append([dtsiSlavesFile, uploadDir])
+    allFiles.append([dtsiSlavesFile, uploadDir+'slaves.yaml'])
     for slave in yaml.load(open(dtsiSlavesFile))['DTSI_CHUNKS']:
         dtsiFile = GetFilesToSend(args.dtsiPath+"hw/", slave+".")
         if len(dtsiFile) != 1:
