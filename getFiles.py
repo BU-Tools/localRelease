@@ -1,5 +1,5 @@
-from os import listdir
-from os.path import isfile, join
+from os import listdir, pardir
+from os.path import isfile, join, abspath
 import yaml
 
 
@@ -43,7 +43,7 @@ def GetAllFilesToSend(args):
         slave = tableYAML['UHAL_MODULES'][slave]
         if 'XML' in slave:
             for xmlFile in slave['XML']:
-                XMLFileItem = [xmlFile, xmlFile]
+                XMLFileItem = [args.tablePath+xmlFile, xmlFile]
                 if XMLFileItem not in XMLFileList:
                     XMLFileList.append(XMLFileItem)
     allFiles.extend(XMLFileList)
@@ -51,7 +51,8 @@ def GetAllFilesToSend(args):
     #########################################################################
     # FW files
     #########################################################################
-    bitFiles = GetFilesToSend('bit/', 'top')
+    bitFilesPath = abspath(join(args.dtsiPath, pardir))
+    bitFiles = GetFilesToSend(bitFilesPath+'/bit/', 'top')
     for file in bitFiles:
         allFiles.append([bitFiles[file], file])
 

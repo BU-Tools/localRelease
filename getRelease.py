@@ -122,7 +122,7 @@ def GetLocalReleaseFiles(name, localPath):
                 filename = "kernel/"+name+"_slaves.yaml"
             else:
                 # dtsi file, rename path to kernel/hw_NAME/*
-                filename = dtsiDir+item[1].replace("dtsi.", "")
+                filename = dtsiDir+item[1].replace("dtsi/", "")
             print "Copying", item[1], "from", item[0], "to", filename
             shutil.copyfile(item[0], filename)
 
@@ -135,7 +135,7 @@ def GetLocalReleaseFiles(name, localPath):
                 filename = "os/"+name+"_slaves.yaml"
             else:
                 filename = addressTableDir + \
-                    item[1].replace("address_table.modules.", "")
+                    item[1].replace("address_table/modules/", "")
             print "Copying", item[1], "from", item[0], "to", filename
             shutil.copyfile(item[0], filename)
 
